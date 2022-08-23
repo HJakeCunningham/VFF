@@ -244,7 +244,7 @@ class LowRankMat:
         M = I + tf.matmul(DiW, self.W, transpose_a=True)
         L = tf.linalg.cholesky(M)
         v = tf.transpose(tf.linalg.triangular_solve(L, tf.transpose(DiW), lower=True))  # XXX
-        return LowRankMatNeg(di, V)
+        return LowRankMatNeg(di, v)
 
     def trace_KiX(self, X):
         """

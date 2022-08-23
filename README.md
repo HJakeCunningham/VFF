@@ -6,7 +6,7 @@ Compared to the base repo, this version of the code has been ported to TensorFlo
 So far, the following modules have been ported:
 - VFF package
   - [ ] [gpmc.py](https://github.com/st--/VFF/blob/gpflow2/VFF/gpmc.py)
-  - [ ] [gpr.py](https://github.com/st--/VFF/blob/gpflow2/VFF/gpr.py)
+  - [X] [gpr.py](https://github.com/st--/VFF/blob/gpflow2/VFF/gpr.py)
   - [X] [kronecker_ops.py](https://github.com/st--/VFF/blob/gpflow2/VFF/kronecker_ops.py)
   - [X] [matrix_structures.py](https://github.com/st--/VFF/blob/gpflow2/VFF/matrix_structures.py)
   - [ ] [psi_statistics.py](https://github.com/st--/VFF/blob/gpflow2/VFF/psi_statistics.py)
