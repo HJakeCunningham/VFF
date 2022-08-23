@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import os
+from turtle import clear
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 from matplotlib import pyplot as plt
-import GPflow
+import gpflow
 import VFF
 
 plt.ion()
@@ -37,32 +39,36 @@ def plot(m, ax=None):
     (line,) = ax.plot(xtest, mu, lw=1.5)
     ax.plot(xtest, mu + 2 * np.sqrt(var), color=line.get_color())
     ax.plot(xtest, mu - 2 * np.sqrt(var), color=line.get_color())
-    ax.plot(m.X.value, m.Y.value, "kx", mew=1.5)
+    #ax.plot(m.X, m.Y, "kx", mew=1.5)
 
 
 # build a full model to get hypers.
-K = GPflow.kernels.Matern12
-m_full = GPflow.gpr.GPR(X, Y, kern=K(1))
-m_full.optimize()
+k = gpflow.kernels.Matern12
+m_full = gpflow.models.GPR(data=(X, Y), kernel=k(1), mean_function=None)
+opt = gpflow.optimizers.Scipy()
+opt.minimize(m_full.training_loss, m_full.trainable_variables)
 
-f, axes = plt.subplots(2, 3, sharex=True, sharey=True)
+f, axes = plt.subplots(2, 2, sharex=True, sharey=True)
 axes = axes.flatten()
 ax_count = 0
-for M in [20, 100, 500]:
-    m = VFF.SSGP(X, Y, kern=K(1), num_basis=M)
-    m.omega.fixed = True
-    m.kern.set_parameter_dict(m_full.kern.get_parameter_dict())
-    m.likelihood.set_parameter_dict(m_full.likelihood.get_parameter_dict())
-    if optimize:
-        m.optimize()
-    plot(m, axes[ax_count])
-    axes[ax_count].set_title("RFF (%i)" % M)
-    ax_count += 1
+# for M in [20, 100, 500]:
+#     m = VFF.SSGP(X, Y, kern=K(1), num_basis=M)
+#     m.omega.fixed = True
+#     m.kern.set_parameter_dict(m_full.kern.get_parameter_dict())
+#     m.likelihood.set_parameter_dict(m_full.likelihood.get_parameter_dict())
+#     if optimize:
+#         m.optimize()
+#     plot(m, axes[ax_count])
+#     axes[ax_count].set_title("RFF (%i)" % M)
+#     ax_count += 1
 
 for M in [20, 100]:
-    m = VFF.gpr.GPR_1d(X, Y, np.arange(M), a=-1, b=2, kern=K(1))
-    m.kern.set_parameter_dict(m_full.kern.get_parameter_dict())
-    m.likelihood.set_parameter_dict(m_full.likelihood.get_parameter_dict())
+    m = VFF.gpr.GPR_1d(data=(X, Y), ms=np.arange(M), a=-1, b=2, kernel=k(1))
+    # m.kernel.set_parameter_dict(m_full.kernel.get_parameter_dict())
+    # m.likelihood.set_parameter_dict(m_full.likelihood.get_parameter_dict())
+    m.kernel.lengthscales.assign(m_full.kernel.lengthscales)
+    m.kernel.variance.assign(m_full.kernel.variance)
+    m.likelihood.variance.assign(m_full.likelihood.variance)
     if optimize:
         m.optimize()
     plot(m, axes[ax_count])
