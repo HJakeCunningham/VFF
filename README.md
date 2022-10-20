@@ -16,6 +16,7 @@ So far, the following modules have been ported:
   - [X] [vgp.py](https://github.com/st--/VFF/blob/gpflow2/VFF/vgp.py)
 - experiments
   - [X] [banana](https://github.com/st--/VFF/blob/gpflow2/experiments/banana)
+  - [X] [simple_regression] (https://github.com/st--/VFF/blob/gpflow2/experiments/simple_regression)
   - [ ] (everything else)
 
 

@@ -26,8 +26,7 @@ def make_Kuu(kern, a, b, ms):
     # Make a representation of the Kuu matrices
     """
     omegas = 2.0 * np.pi * ms / (b - a)
-    if default_float() is np.float32:
-        omegas = omegas.astype(np.float32)
+    #omegas = omegas.astype(np.float64)
     if isinstance(kern, gpflow.kernels.Matern12):
         # cos part first
         lamb = 1.0 / kern.lengthscales
@@ -47,18 +46,18 @@ def make_Kuu(kern, a, b, ms):
         four_or_eight = np.where(omegas == 0, 4.0, 8.0)
         d_cos = (
             (b - a)
-            * tf.square(tf.square(lamb) + tf.square(omegas))
+            * tf.square(tf.square(lamb) + tf.cast(tf.square(omegas), dtype=tf.float64))
             / tf.pow(lamb, 3)
             / kern.variance
             / four_or_eight
         )
-        v_cos = tf.ones(tf.shape(d_cos), default_float()) / tf.sqrt(kern.variance)
+        v_cos = tf.ones(tf.shape(d_cos), tf.float64) / tf.sqrt(kern.variance)
 
         # now the sin part
         omegas = omegas[omegas != 0]  # don't compute omega=0
         d_sin = (
             (b - a)
-            * tf.square(tf.square(lamb) + tf.square(omegas))
+            * tf.square(tf.square(lamb) + tf.cast(tf.square(omegas), dtype=tf.float64))
             / tf.pow(lamb, 3)
             / kern.variance
             / 8.0
@@ -108,8 +107,8 @@ def make_Kuf_no_edges(X, a, b, ms):
 
 def make_Kuf(k, X, a, b, ms):
     omegas = 2.0 * np.pi * ms / (b - a)
-    if default_float() is np.float32:
-        omegas = omegas.astype(np.float32)
+    # if default_float() is np.float32:
+    #     omegas = omegas.astype(np.float32)
     Kuf_cos = tf.transpose(tf.cos(omegas * (X - a)))
     omegas_sin = omegas[omegas != 0]  # don't compute zeros freq.
     Kuf_sin = tf.transpose(tf.sin(omegas_sin * (X - a)))
@@ -164,13 +163,13 @@ def make_Kuf(k, X, a, b, ms):
         )
     else:
         raise NotImplementedError
-    return tf.concat([Kuf_cos, Kuf_sin], axis=0)
+    return np.concatenate([Kuf_cos, Kuf_sin], axis=0)
 
 
 def make_Kuf_np(X, a, b, ms):
     omegas = 2.0 * np.pi * ms / (b - a)
     Kuf_cos = np.cos(omegas * (X - a)).T
-    omegas = omegas[omegas != 0]  # don't compute zeros freq.
+    #omegas = omegas[omegas != 0]  # don't compute zeros freq.
     Kuf_sin = np.sin(omegas * (X - a)).T
     return np.vstack([Kuf_cos, Kuf_sin])
 

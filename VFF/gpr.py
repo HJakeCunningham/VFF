@@ -41,12 +41,12 @@ class GPR_1d(gpflow.models.GPModel, gpflow.models.InternalDataTrainingLossMixin)
         self.data = data
         self.a = a
         self.b = b
-        self.ms = ms
+        self.ms = np.arange(ms)
 
         # Precompute static quantities
         assert np.all(self.X > a)
         assert np.all(self.X < b)
-        Kuf = make_Kuf_np(self.X, a, b, ms)
+        Kuf = make_Kuf(self.kernel, self.X, a, b, self.ms)
         self.KufY = np.dot(Kuf, self.Y)
         self.KufKfu = np.dot(Kuf, Kuf.T)
         self.tr_YTY = np.sum(np.square(self.Y))

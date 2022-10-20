@@ -12,7 +12,7 @@ Setup = namedtuple("Setup", ["a", "b", "ms", "data", "Xt_int", "Xt_ext"])
 def setup_1d():
     N = 13
     Nt = 7
-    ms = np.arange(5)
+    ms = 5
     a = np.float64(-0.3)
     b = np.float64(1.3)
     X = np.random.rand(N, 1)

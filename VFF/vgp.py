@@ -41,7 +41,7 @@ class VGP_1d(gpflow.models.GPModel, gpflow.models.InternalDataTrainingLossMixin)
         self.data = data
         self.a = a
         self.b = b
-        self.ms = ms
+        self.ms = np.arange(ms)
 
         # initialize variational parameters
         Ncos = self.ms.size
